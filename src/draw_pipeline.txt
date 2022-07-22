@@ -1,0 +1,76 @@
+
+struct GAME
+{
+	Entity *entity_batch;
+	u32 entity_batch_count;
+	u32 entity_used;
+	u32 entity_id;
+    
+	TILEMAP tilemap;
+    
+	ENTITY *player;
+	ENTITY *monster;
+	ENTITY *current_chosen_atlas;
+	ENTITY *current_chosen_sprite;
+	ENTITY *sprite_box;
+	ENTITY *collision_select_box;
+    
+	ENTITY *camera;
+
+	CJ_CONSOLE console; // Has an entity as background image
+    
+	GAME_STATE state = game_state_main_menu;
+};
+
+-------------------------------------------------------
+|   Current way from Entity creation to rendering     |	
+-------------------------------------------------------
+
+
+*** During Game Initialization ***
+
+1. Allocate a big entity batch
+2. PushEntity(), and initialize its data-members.
+
+
+*** During Game Update ***
+
+3. Update an entitie's attributes
+
+
+*** Before Passing entities to renderer ***
+
+4. Sort the VBO containing the Entity-data
+
+
+*** During Update Renderer ***
+5. Bind VAO, VBO, Send updated VBO to the GPU
+6. DrawElements()   
+
+
+
+-------------------------------------------------------
+|   		How to setup a new render batch pipe	  |	
+-------------------------------------------------------
+
+*** During Game Init ***
+1. 	declare memory pool of a batch in the GAME_HANDLER struct  
+	u8 *base ( examples: spritebatch, solidcolor-quad batch etc... )
+	u32 size
+	u32 used
+
+2.	Allocate a object with Push"objectname"(pool, type, count)
+		
+*** In CreateRenderer() ***
+3.	Create a VBO for the object
+	and InitializeVBO()    
+
+*** In Update_VBO_ColQ() after OnGameUpdate() ***
+4. Update the vbo with the objectbatch
+
+*** In UpdateRenderer() ***
+5. Bind VAO, VBO, Send updated VBO to the GPU (glBufferSubdata)
+6. DrawArrays() or DrawElements (if and indexbuffer was created dureing step 3.)
+
+-------------------------------------------------------
+
